@@ -5553,6 +5553,11 @@ react-native-vector-icons@^9.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
+react-native-voximplant@^1.35.0:
+  version "1.35.0"
+  resolved "https://registry.yarnpkg.com/react-native-voximplant/-/react-native-voximplant-1.35.0.tgz#d5eba2aa267bbbd98942c481a5e4f516399766a7"
+  integrity sha512-+8VKdHwLBU4RocgmPtR1SPOftdNSxQgbk/iaytdj+5f6JvRoPPUz0sy/xaHYNEmrZWNZFBg1yTs+jKuw6iHe6Q==
+
 react-native@0.70.6:
   version "0.70.6"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.70.6.tgz#d692f8b51baffc28e1a8bc5190cdb779de937aa8"
