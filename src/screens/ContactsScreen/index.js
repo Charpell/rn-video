@@ -7,12 +7,30 @@ import {
   TextInput,
   Pressable,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/core';
+import {Voximplant} from 'react-native-voximplant';
 import dummyContacts from '../../data/contacts.json';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ContactsScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredContacts, setFilteredContacts] = useState(dummyContacts);
+
+  const navigation = useNavigation();
+  const voximplant = Voximplant.getInstance();
+
+  useEffect(() => {
+    voximplant.on(Voximplant.ClientEvents.IncomingCall, incomingCallEvent => {
+      navigation.navigate('IncomingCall', {call: incomingCallEvent.call});
+    });
+
+    return () => {
+      voximplant.off(Voximplant.ClientEvents.IncomingCall);
+    };
+  }, []);
+
+  const callUser = user => {
+    navigation.navigate('Calling', {user});
+  };
 
   useEffect(() => {
     const newContacts = dummyContacts.filter(contact =>
@@ -31,11 +49,10 @@ const ContactsScreen = () => {
         style={styles.searchInput}
         placeholder="Search..."
       />
-      <Ionicons name="ios-camera-reverse" />
       <FlatList
         data={filteredContacts}
         renderItem={({item}) => (
-          <Pressable>
+          <Pressable onPress={() => callUser(item)}>
             <Text style={styles.contactName}>{item.user_display_name}</Text>
           </Pressable>
         )}

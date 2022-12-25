@@ -8,10 +8,54 @@ import {
   Text,
   Alert,
 } from 'react-native';
+import {Voximplant} from 'react-native-voximplant';
+import {APP_NAME, ACC_NAME} from '../../Constants';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const voximplant = Voximplant.getInstance();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const connect = async () => {
+      const status = await voximplant.getClientState();
+      if (status === Voximplant.ClientState.DISCONNECTED) {
+        await voximplant.connect();
+      } else if (status === Voximplant.ClientState.LOGGED_IN) {
+        redirectHome();
+      }
+    };
+
+    connect();
+  }, []);
+
+  const signIn = async () => {
+    if (!ACC_NAME || !APP_NAME) {
+      return Alert.alert('Missing credentials');
+    }
+    try {
+      const fqUsername = `${username}@${APP_NAME}.${ACC_NAME}.voximplant.com`;
+      await voximplant.login(fqUsername, password);
+
+      redirectHome();
+    } catch (e) {
+      console.log(e);
+      Alert.alert(e.name, `Error code: ${e.code}`);
+    }
+  };
+
+  const redirectHome = () => {
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'Contacts',
+        },
+      ],
+    });
+  };
 
   return (
     <View style={styles.page}>
@@ -30,7 +74,7 @@ const LoginScreen = () => {
         secureTextEntry
       />
 
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={signIn}>
         <Text>Sign in</Text>
       </Pressable>
     </View>

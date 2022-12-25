@@ -4,9 +4,37 @@ import bg from '../../data/ios_bg.png';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
+import {useRoute, useNavigation} from '@react-navigation/native';
+import {Voximplant} from 'react-native-voximplant';
 
 const IncomingCallScreen = () => {
   const [caller, setCaller] = useState('');
+  const route = useRoute();
+  const navigation = useNavigation();
+  const {call} = route.params;
+
+  useEffect(() => {
+    setCaller(call.getEndpoints()[0].displayName);
+
+    call.on(Voximplant.CallEvents.Disconnected, callEvent => {
+      navigation.navigate('Contacts');
+    });
+
+    return () => {
+      call.off(Voximplant.CallEvents.Disconnected);
+    };
+  }, []);
+
+  const onDecline = () => {
+    call.decline();
+  };
+
+  const onAccept = () => {
+    navigation.navigate('Calling', {
+      call,
+      isIncomingCall: true,
+    });
+  };
 
   return (
     <ImageBackground source={bg} style={styles.bg} resizeMode="cover">
@@ -26,7 +54,7 @@ const IncomingCallScreen = () => {
 
       <View style={styles.row}>
         {/* Decline Button */}
-        <Pressable style={styles.iconContainer}>
+        <Pressable onPress={onDecline} style={styles.iconContainer}>
           <View style={styles.iconButtonContainer}>
             <Feather name="x" color="white" size={40} />
           </View>
@@ -34,7 +62,7 @@ const IncomingCallScreen = () => {
         </Pressable>
 
         {/* Accept Button */}
-        <Pressable style={styles.iconContainer}>
+        <Pressable onPress={onAccept} style={styles.iconContainer}>
           <View
             style={[styles.iconButtonContainer, {backgroundColor: '#2e7bff'}]}>
             <Feather name="check" color="white" size={40} />
