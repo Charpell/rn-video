@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     padding: 10,
     borderRadius: 5,
+    color: 'black',
   },
 });
 
